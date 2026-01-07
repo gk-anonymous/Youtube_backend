@@ -3,7 +3,7 @@ const Subscriber = require("./models/subscribers");
 
 const app = express();
 
-// middleware
+// Middleware
 app.use(express.json());
 
 /**
@@ -15,7 +15,8 @@ app.get("/subscribers", async (req, res) => {
     const subscribers = await Subscriber.find();
     res.json(subscribers);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error); // log server-side errors
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -31,25 +32,34 @@ app.get("/subscribers/names", async (req, res) => {
     );
     res.json(subscribers);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
 /**
  * GET /subscribers/:id
  * Returns subscriber by ID
+ * Handles invalid ObjectId and not found
  */
 app.get("/subscribers/:id", async (req, res) => {
   try {
-    const subscriber = await Subscriber.findById(req.params.id);
+    const { id } = req.params;
 
+    // Validate ObjectId format before querying
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid subscriber ID" });
+    }
+
+    const subscriber = await Subscriber.findById(id);
     if (!subscriber) {
-      return res.status(400).json({ message: "Subscriber not found" });
+      return res.status(404).json({ message: "Subscriber not found" });
     }
 
     res.json(subscriber);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

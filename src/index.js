@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Connect to DATABASE
 const DATABASE_URL =
-  process.env.DATABASE_URL || "mongodb://localhost/subscribers";
+  "mongodb+srv://12345:12345@cluster0.bc1m408.mongodb.net/subscribers";
 mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
